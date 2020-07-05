@@ -13,37 +13,24 @@ import { EmbeddedViewRef } from '@angular/core/src/linker/view_ref';
 })
 export class AppComponent implements AfterViewInit {
 
-  @ViewChild('innerComponent', { read: ViewContainerRef })
-  innerComponent: ViewContainerRef;
-
-  @ViewChild('innerComponent', { read: TemplateRef }) _template: TemplateRef<any>;
-
+  @ViewChild('innerComponent', { read: TemplateRef })
+  innerComponent: TemplateRef;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private viewContainerRef: ViewContainerRef) {
   }
 
   ngAfterViewInit() {
-    this.createDynamicIntoDynamic();
-    this.createNormalIntoDynamic();
-  }
+    const normalInnerComponentTemplateRef = this.innerComponent.createEmbeddedView({}).rootNodes[0];
 
-  createDynamicIntoDynamic(){
-    const innerContentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(InnerContentComponent);
-    const innerComponentRef: ComponentRef<InnerContentComponent> =
-      this.viewContainerRef.createComponent(innerContentComponentFactory);
+    const dynamicInnerContentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(InnerContentComponent);
+    const dynamicInnerComponentRef: ComponentRef<InnerContentComponent> =
+      this.viewContainerRef.createComponent(dynamicInnerContentComponentFactory);
+    const dynamicInnerComponentTemplateRef= dynamicInnerComponentRef.location.nativeElement;
 
     const contentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
     const componentRef: ComponentRef<ContentComponent> =
-      this.viewContainerRef.createComponent(contentComponentFactory, 0, undefined, [[innerComponentRef.location.nativeElement]]);
-    componentRef.changeDetectorRef.detectChanges();
-  }
-
-  createNormalIntoDynamic(){
-    const view = this._template.createEmbeddedView({});
-    const contentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
-    const componentRef: ComponentRef<ContentComponent> =
-      this.viewContainerRef.createComponent(contentComponentFactory, 0, undefined, [[view.rootNodes[0]]]);
+      this.viewContainerRef.createComponent(contentComponentFactory, 0, undefined, [[normalInnerComponentTemplateRef],[dynamicInnerComponentTemplateRef]]);
     componentRef.changeDetectorRef.detectChanges();
   }
 
