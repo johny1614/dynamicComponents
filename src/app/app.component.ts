@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, ViewContainerRef } from '@angular/core';
 import { ContentComponent } from 'src/app/content/content.component';
 
 @Component({
@@ -12,8 +12,10 @@ export class AppComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
-    this.viewContainerRef.createComponent(componentFactory);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
+    const componentRef: ComponentRef<ContentComponent> = this.viewContainerRef.createComponent(componentFactory);
+    componentRef.instance.name = 'Johny';
+    componentRef.changeDetectorRef.detectChanges();
   }
 
 }

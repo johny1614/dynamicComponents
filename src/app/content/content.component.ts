@@ -1,8 +1,11 @@
-import { Component } from "@angular/core";
+import { Component, Input } from '@angular/core';
 
 @Component({
-  template: `Hello from content Component :)`,
+  template: `Hello {{name}} from content Component :)`
 })
 export class ContentComponent {
+
+  @Input()
+  name: string;
 
 }
