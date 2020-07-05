@@ -7,7 +7,7 @@ import { ContentComponent } from './content/content.component';
 @NgModule({
   declarations: [
     AppComponent,
-    ContentComponent
+    ContentComponent,
   ],
   imports: [
     BrowserModule

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, Renderer2, ViewContainerRef } from '@angular/core';
 import { ContentComponent } from 'src/app/content/content.component';
 
 @Component({
@@ -8,13 +8,16 @@ import { ContentComponent } from 'src/app/content/content.component';
 export class AppComponent implements AfterViewInit {
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              private viewContainerRef: ViewContainerRef) {
+              private viewContainerRef: ViewContainerRef,
+              private renderer2: Renderer2) {
   }
+
 
   ngAfterViewInit() {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
-    const componentRef: ComponentRef<ContentComponent> = this.viewContainerRef.createComponent(componentFactory);
-    componentRef.instance.name = 'Johny';
+    const element = this.renderer2.createText('Hiho from the AppComponent!');
+    const componentRef: ComponentRef<ContentComponent> =
+    this.viewContainerRef.createComponent(componentFactory, 0, undefined, [[element]]);
     componentRef.changeDetectorRef.detectChanges();
   }
 
