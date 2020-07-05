@@ -1,24 +1,33 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, Renderer2, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, Renderer2, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ContentComponent } from 'src/app/content/content.component';
 
 @Component({
   selector: 'my-app',
-  template: ``
+  template: `
+  <ng-template #AppButton>
+    <button (click)="logSth()">Button from AppComponent</button>
+  </ng-template>
+  `
 })
 export class AppComponent implements AfterViewInit {
 
+  @ViewChild('AppButton')
+  appButton: TemplateRef<any>;
+
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              private viewContainerRef: ViewContainerRef,
-              private renderer2: Renderer2) {
+              private viewContainerRef: ViewContainerRef) {
   }
 
-
   ngAfterViewInit() {
+    const buttonNode = this.appButton.createEmbeddedView({}).rootNodes[0];
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
-    const element = this.renderer2.createText('Hiho from the AppComponent!');
     const componentRef: ComponentRef<ContentComponent> =
-    this.viewContainerRef.createComponent(componentFactory, 0, undefined, [[element]]);
+    this.viewContainerRef.createComponent(componentFactory, 0, undefined, [[buttonNode]]);
     componentRef.changeDetectorRef.detectChanges();
+  }
+
+  logSth(){
+    console.log('everything works :)');
   }
 
 }
