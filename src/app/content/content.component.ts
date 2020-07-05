@@ -5,7 +5,9 @@ import { Component, Input } from '@angular/core';
   <br>
   <ng-content></ng-content>
   <br>
-  <ng-content></ng-content>`
+  <ng-content></ng-content>
+  `,
+  selector: 'app-content'
 })
 export class ContentComponent {
 

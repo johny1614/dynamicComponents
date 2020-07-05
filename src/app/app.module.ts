@@ -14,7 +14,7 @@ import { InnerContentComponent } from './inner-content/inner-content.component';
   imports: [
     BrowserModule
   ],
-  entryComponents:[ContentComponent],
+  entryComponents:[ContentComponent,InnerContentComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

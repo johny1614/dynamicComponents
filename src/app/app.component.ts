@@ -1,40 +1,54 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentFactoryResolver, ComponentRef, Renderer2, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ContentComponent } from 'src/app/content/content.component';
+import { InnerContentComponent } from 'src/app/inner-content/inner-content.component';
+import { EmbeddedViewRef } from '@angular/core/src/linker/view_ref';
 
 @Component({
   selector: 'my-app',
   template: `
-  <ng-template #AppButton>
-    <button (click)="logSth()">Button from AppComponent</button>
-  </ng-template>
-  <ng-template #AppText>
-    Also hello from appComponent!
-  </ng-template>
+    <ng-template #innerComponent>
+      <app-inner (click)="logSth()"></app-inner>
+    </ng-template>
   `
 })
 export class AppComponent implements AfterViewInit {
 
-  @ViewChild('AppButton')
-  appButton: TemplateRef<any>;
+  @ViewChild('innerComponent', { read: ViewContainerRef })
+  innerComponent: ViewContainerRef;
 
-  @ViewChild('AppText')
-  appText: TemplateRef<any>;
+  @ViewChild('innerComponent', { read: TemplateRef }) _template: TemplateRef<any>;
+
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private viewContainerRef: ViewContainerRef) {
   }
 
   ngAfterViewInit() {
-    const buttonNode = this.appButton.createEmbeddedView({}).rootNodes[0];
-    const textNode = this.appText.createEmbeddedView({}).rootNodes[0];
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
+    this.createDynamicIntoDynamic();
+    this.createNormalIntoDynamic();
+  }
+
+  createDynamicIntoDynamic(){
+    const innerContentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(InnerContentComponent);
+    const innerComponentRef: ComponentRef<InnerContentComponent> =
+      this.viewContainerRef.createComponent(innerContentComponentFactory);
+
+    const contentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
     const componentRef: ComponentRef<ContentComponent> =
-    this.viewContainerRef.createComponent(componentFactory, 0, undefined, [[buttonNode],[textNode]]);
+      this.viewContainerRef.createComponent(contentComponentFactory, 0, undefined, [[innerComponentRef.location.nativeElement]]);
+    componentRef.changeDetectorRef.detectChanges();
+  }
+
+  createNormalIntoDynamic(){
+    const view = this._template.createEmbeddedView({});
+    const contentComponentFactory = this.componentFactoryResolver.resolveComponentFactory(ContentComponent);
+    const componentRef: ComponentRef<ContentComponent> =
+      this.viewContainerRef.createComponent(contentComponentFactory, 0, undefined, [[view.rootNodes[0]]]);
     componentRef.changeDetectorRef.detectChanges();
   }
 
   logSth(){
-    console.log('everything works :)');
+    console.log('hello in the console :)');
   }
 
 }
